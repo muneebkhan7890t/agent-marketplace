@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/*
+  Design direction: "shipping manifest" -- this dashboard's whole job is
+  showing which rails (payment, courier, messaging) are wired into a
+  merchant's storefront. Cards read like manifest stubs: a perforated
+  tear-edge and a rotated stamp badge ("WIRED" / "PENDING") stand in for
+  a connection state, instead of a generic colored dot.
+*/
+
+:root {
+  --paper: #f5f6f3;
+  --surface: #ffffff;
+  --ink: #12181f;
+  --ink-muted: #5b6570;
+  --line: #dfe3de;
+
+  --wire: #1b4b43;       /* deep teal -- the "connected rail" color */
+  --wire-soft: #e4efec;
+  --live: #b8ff3d;       /* reserved: connected pulse only */
+  --pending: #9aa3ae;
+  --danger: #b3432f;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-wire: var(--wire);
+  --color-wire-soft: var(--wire-soft);
+  --color-live: var(--live);
+  --color-pending: var(--pending);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Manifest card: perforated left edge via a repeating radial gradient
+   "punch" pattern. */
+.manifest-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding-left: 1.75rem;
+}
+
+.manifest-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1.25rem;
+  background-image: radial-gradient(
+    circle at 0.625rem,
+    var(--paper) 3px,
+    transparent 3.5px
+  );
+  background-size: 100% 1.1rem;
+  background-repeat: repeat-y;
+  border-right: 1px dashed var(--line);
+}
+
+/* Stamp badge -- connection status */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.stamp-wired {
+  color: var(--wire);
+  background: var(--wire-soft);
+}
+
+.stamp-pending {
+  color: var(--pending);
+  background: transparent;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--live);
+  box-shadow: 0 0 0 0 rgba(184, 255, 61, 0.6);
+  animation: pulse 2.2s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot {
+    animation: none;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(184, 255, 61, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(184, 255, 61, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(184, 255, 61, 0);
+  }
+}

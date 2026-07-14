@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentHub</title>
+<style>
+/* ============================================================
+   EASY-EDIT GUIDE
+   - Want a different color scheme? Just change the values below.
+     Everything in the file references these variables, so one
+     edit here updates the whole app.
+   - --accent / --accent2 = your brand color (buttons, links, highlights)
+   - --bg / --surface / --card = background layers (darkest to lightest)
+   - --green/--red/--amber/--blue = status colors (success/error/warning/info)
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0b12;--surface:#13131e;--card:#1a1a28;--card2:#1f1f30;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#eeeef5;--muted:#7777aa;--dim:#44445a;
+  --accent:#7c6fcd;--accent2:#a99fe8;--aglow:rgba(124,111,205,0.12);
+  --green:#22c55e;--gbg:rgba(34,197,94,0.1);
+  --red:#ef4444;--rbg:rgba(239,68,68,0.1);
+  --amber:#f59e0b;--abg:rgba(245,158,11,0.1);
+  --blue:#3b82f6;--bbg:rgba(59,130,246,0.1);
+  --r:10px;--rlg:16px;
+}
+body{font-family:-apple-system,'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:14px}
+
+/* sidebar */
+.sb{width:210px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);position:fixed;left:0;top:0;bottom:0;display:flex;flex-direction:column;z-index:50}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 8px rgba(124,111,205,.35)}
+.sb-title{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.sb-sub{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+nav{padding:10px 8px;flex:1;overflow-y:auto}
+.nav-sec{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);padding:10px 8px 5px;font-weight:600}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;cursor:pointer;font-size:12.5px;color:var(--muted);transition:all .15s;margin-bottom:1px;user-select:none;border:none;background:none;width:100%;text-align:left}
+.ni:hover{background:var(--card);color:var(--text)}
+.ni.active{background:var(--aglow);color:var(--accent2)}
+.ni-ic{width:14px;text-align:center}
+.nb{margin-left:auto;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:20px}
+.sb-foot{padding:10px;border-top:1px solid var(--border)}
+.upill{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:8px;background:var(--card)}
+.av{width:26px;height:26px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+
+/* main */
+.main{margin-left:210px;flex:1;min-height:100vh}
+.page{display:none;padding:24px 28px}
+.page.active{display:block}
+
+/* topbar */
+.tb{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.pt{font-size:20px;font-weight:700;letter-spacing:-.4px}
+.ps{font-size:12px;color:var(--muted);margin-top:2px}
+.tba{display:flex;gap:8px;align-items:center;margin-top:4px}
+
+/* buttons */
+.btn{padding:6px 13px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--card);color:var(--text);transition:all .15s;font-family:inherit}
+.btn:hover{background:var(--card2)}
+.btn-p{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-p:hover{opacity:.88}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-danger{border-color:rgba(239,68,68,.3);color:var(--red)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* stats */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.sl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;font-weight:500}
+.sv{font-size:24px;font-weight:700;letter-spacing:-.5px;line-height:1}
+.sd{font-size:10px;margin-top:3px}
+.sup{color:var(--green)}.sdn{color:var(--red)}.snt{color:var(--muted)}
+
+/* section */
+.sec{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;margin-bottom:16px}
+.sh{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.st{font-size:13px;font-weight:600}
+.sb2{padding:14px 16px}
+
+/* grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:7px 10px;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--border)}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.015)}
+
+/* badge */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
+.bg{background:var(--gbg);color:var(--green)}
+.br{background:var(--rbg);color:var(--red)}
+.ba{background:var(--abg);color:var(--amber)}
+.bb{background:var(--bbg);color:var(--blue)}
+.bp{background:var(--aglow);color:var(--accent2)}
+.dot{width:4px;height:4px;border-radius:50%;background:currentColor}
+
+/* form */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px}
+.fi{width:100%;padding:8px 11px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:12px;font-family:inherit;outline:none;transition:border-color .15s}
+.fi:focus{border-color:var(--accent)}
+.fi::placeholder{color:var(--dim)}
+
+/* integration card */
+.ic{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:9px}
+.ic-top{display:flex;align-items:center;justify-content:space-between}
+.ic-logo{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--card);border:1px solid var(--border)}
+.ic-name{font-size:13px;font-weight:600;margin-top:3px}
+.ic-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.tog{width:34px;height:18px;border-radius:9px;background:var(--border2);position:relative;cursor:pointer;border:none;flex-shrink:0;transition:background .2s}
+.tog.on{background:var(--accent)}
+.tog::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s}
+.tog.on::after{transform:translateX(16px)}
+
+/* friendly banner (used for helpful callouts, e.g. "agents are free") */
+.banner{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--aglow),rgba(124,111,205,.03));border:1px solid rgba(124,111,205,.25);border-radius:var(--rlg);padding:12px 16px;margin-bottom:16px;font-size:12.5px;color:var(--text)}
+.banner b{color:var(--accent2)}
+
+/* agent card */
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px;cursor:pointer;transition:all .2s;position:relative;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.ac:hover{border-color:var(--border2);background:var(--card);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.ac.ins{border-color:rgba(124,111,205,.25)}
+.ac .free-tag{font-size:10px;font-weight:700;color:var(--green);background:var(--gbg);padding:2px 7px;border-radius:20px}
+.ai-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px}
+.an{font-size:13px;font-weight:600;margin-bottom:3px}
+.ad{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:10px}
+.af{display:flex;align-items:center;justify-content:space-between}
+.ap{font-size:11px;font-weight:700;color:var(--accent2)}
+
+/* email */
+.em{padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:padding .15s}
+.em:last-child{border-bottom:none}
+.em:hover{padding-left:5px}
+.em-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.em-from{font-size:12px;font-weight:600}
+.em-time{font-size:10px;color:var(--dim)}
+.em-subj{font-size:11.5px;color:var(--muted)}
+.em-snip{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+
+/* code result box */
+.res{background:var(--surface);border-radius:8px;padding:10px;font-size:10.5px;font-family:monospace;color:var(--muted);min-height:50px;white-space:pre-wrap;display:none;margin-top:8px;border:1px solid var(--border);max-height:280px;overflow-y:auto}
+
+/* log */
+.li{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:11px}
+.li:last-child{border-bottom:none}
+.lt{color:var(--dim);min-width:72px;font-family:monospace}
+.lm{color:var(--muted);flex:1}
+.la{color:var(--accent2);font-weight:600}
+
+/* toast */
+#toast{position:fixed;bottom:20px;right:20px;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;font-size:12px;display:flex;align-items:center;gap:9px;z-index:999;transform:translateY(70px);opacity:0;transition:all .28s;max-width:300px}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* loading spinner */
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* auth */
+.auth-wrap{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:200}
+.auth-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px;width:360px}
+.auth-tabs{display:flex;background:var(--surface);border-radius:8px;padding:3px;margin-bottom:18px;gap:0}
+.atab{flex:1;padding:6px;text-align:center;font-size:12px;cursor:pointer;border-radius:6px;color:var(--muted);transition:all .15s}
+.atab.active{background:var(--card);color:var(--text);font-weight:600}
+.err{background:var(--rbg);border:1px solid rgba(239,68,68,.2);color:var(--red);padding:8px 11px;border-radius:8px;font-size:11.5px;margin-bottom:12px;display:none}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div class="auth-wrap" id="authWrap">
+  <div class="auth-box">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
+      <div class="sb-icon">🤖</div>
+      <div><div style="font-size:16px;font-weight:700">AgentHub</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">AI Agent Marketplace</div></div>
+    </div>
+    <div class="auth-tabs">
+      <div class="atab active" onclick="authTab('login',this)">Sign in</div>
+      <div class="atab" onclick="authTab('register',this)">Register</div>
+    </div>
+    <div id="authErr" class="err"></div>
+
+    <div id="loginF">
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="lemail" type="email" placeholder="you@store.com" value=""></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" id="lpass" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-p" style="width:100%;margin-top:4px" onclick="doLogin()" id="loginBtn">Sign in</button>
+    </div>
+
+    <div id="registerF" style="display:none">
+      <div class="fg"><label class="fl">Full name</label><input class="fi" id="rname" placeholder="Your name"></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="remail" type="email" placeholder="you@store.com"></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" id="rpass" type="password" placeholder="Create password"></div>
+      <button class="btn btn-p" style="width:100%;margin-top:4px" onclick="doRegister()" id="regBtn">Create account</button>
+    </div>
+    <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--dim)">Backend: <span id="beUrl">http://localhost:8000</span></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="sb-logo">
+    <div class="sb-icon">🤖</div>
+    <div><div class="sb-title">AgentHub</div><div class="sb-sub">Marketplace</div></div>
+  </div>
+  <nav>
+    <div class="nav-sec">Main</div>
+    <button class="ni active" onclick="go('dashboard',this)"><span class="ni-ic">📊</span> Dashboard</button>
+    <button class="ni" onclick="go('agents',this)"><span class="ni-ic">🤖</span> My Agents</button>
+    <button class="ni" onclick="go('marketplace',this)"><span class="ni-ic">🏪</span> Marketplace</button>
+    <div class="nav-sec">Integrations</div>
+    <button class="ni" onclick="go('gmail',this)"><span class="ni-ic">📧</span> Gmail</button>
+    <button class="ni" onclick="go('whatsapp',this)"><span class="ni-ic">💚</span> WhatsApp</button>
+    <button class="ni" onclick="go('shopify',this)"><span class="ni-ic">🛍️</span> Shopify</button>
+    <button class="ni" onclick="go('ecommerce',this)"><span class="ni-ic">🛒</span> Ecommerce</button>
+    <div class="nav-sec">Analytics</div>
+    <button class="ni" onclick="go('analytics',this)"><span class="ni-ic">📈</span> Analytics</button>
+    <div class="nav-sec">Business</div>
+    <button class="ni" onclick="go('business',this)"><span class="ni-ic">🏢</span> My Business</button>
+    <button class="ni" onclick="go('replies',this)"><span class="ni-ic">💬</span> AI Replies <span class="nb" id="repliesBadge">0</span></button>
+    <button class="ni" onclick="go('knowledge',this)"><span class="ni-ic">📚</span> Knowledge Base</button>
+    <button class="ni" onclick="go('logs',this)"><span class="ni-ic">📋</span> Logs</button>
+    <button class="ni" onclick="go('settings',this)"><span class="ni-ic">⚙️</span> Settings</button>
+  </nav>
+  <div class="sb-foot">
+    <div class="upill">
+      <div class="av" id="sbAv">?</div>
+      <div><div style="font-size:12px;font-weight:600" id="sbName">—</div><div style="font-size:10px;color:var(--muted)" id="sbEmail">—</div></div>
+      <button class="btn btn-sm" style="margin-left:auto;padding:3px 8px" onclick="logout()">Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="pg-dashboard">
+  <div class="tb">
+    <div><div class="pt">Dashboard</div><div class="ps">Welcome back — here's your overview</div></div>
+    <div class="tba">
+      <button class="btn btn-sm" onclick="loadDashboard()">↻ Refresh</button>
+    </div>
+  </div>
+  <div class="sg">
+    <div class="sc"><div class="sl">Businesses</div><div class="sv" id="db-biz">—</div><div class="sd snt">connected stores</div></div>
+    <div class="sc"><div class="sl">Installed Agents</div><div class="sv" id="db-agents">—</div><div class="sd snt">active automations</div></div>
+    <div class="sc"><div class="sl">AI Replies</div><div class="sv" id="db-replies">—</div><div class="sd snt">pending review</div></div>
+    <div class="sc"><div class="sl">Gmail</div><div class="sv" id="db-gmail">—</div><div class="sd snt" id="db-gmail-sub">check status</div></div>
+    <div class="sc"><div class="sl">WhatsApp</div><div class="sv" id="db-whatsapp">—</div><div class="sd snt" id="db-whatsapp-sub">check status</div></div>
+  </div>
+  <div class="g2">
+    <div class="sec">
+      <div class="sh"><div class="st">My businesses</div><button class="btn btn-sm" onclick="go('business',null)">Manage</button></div>
+      <div class="sb2" id="db-biz-list"><div style="color:var(--muted);font-size:12px">Loading...</div></div>
+    </div>
+    <div class="sec">
+      <div class="sh"><div class="st">Installed agents</div><button class="btn btn-sm" onclick="go('marketplace',null)">Browse</button></div>
+      <div class="sb2" id="db-agent-list"><div style="color:var(--muted);font-size:12px">Loading...</div></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="st">Recent logs</div><button class="btn btn-sm" onclick="go('logs',null)">View all</button></div>
+    <div style="padding:0 16px" id="db-logs"><div style="color:var(--muted);font-size:12px;padding:14px 0">Loading...</div></div>
+  </div>
+</div>
+
+<!-- BUSINESS -->
+<div class="page" id="pg-business">
+  <div class="tb">
+    <div><div class="pt">My Business</div><div class="ps">Add a business in seconds — remove it just as easily, anytime</div></div>
+  </div>
+  <div class="banner">💡 <span>Only <b>name</b> is required. Industry and website are optional and can be added later.</span></div>
+  <div class="g2">
+    <div class="sec">
+      <div class="sh"><div class="st">➕ Add a new business</div></div>
+      <div class="sb2">
+        <div class="fg"><label class="fl">Business name</label><input class="fi" id="biz-name" placeholder="My Ecommerce Store"></div>
+        <div class="fg"><label class="fl">Industry <span style="color:var(--dim);font-weight:400">(optional)</span></label><input class="fi" id="biz-industry" placeholder="Ecommerce / Fashion"></div>
+        <div class="fg"><label class="fl">Website URL <span style="color:var(--dim);font-weight:400">(optional)</span></label><input class="fi" id="biz-url" placeholder="https://mystore.com"></div>
+        <button class="btn btn-p" style="width:100%" onclick="createBusiness()">➕ Create business</button>
+        <div class="res" id="biz-res"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sh"><div class="st">My businesses</div><button class="btn btn-sm" onclick="loadBusinesses()">↻ Refresh</button></div>
+      <div class="sb2" id="biz-list"><div style="color:var(--muted);font-size:12px">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- GMAIL -->
+<div class="page" id="pg-gmail">
+  <div class="tb">
+    <div><div class="pt">Gmail</div><div class="ps">Connect and manage Gmail for AI email automation</div></div>
+    <div class="tba" id="gmail-status-badge"></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px">
+    <div class="sec">
+      <div class="sh"><div class="st">Connect Gmail</div></div>
+      <div class="sb2">
+        <div class="fg"><label class="fl">Business ID</label><input class="fi" id="gmail-biz" placeholder="1" value="${CURRENT_BUSINESS_ID}"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="gmailConnect()">Connect Gmail →</button>
+          <button class="btn" onclick="gmailStatus()">Check status</button>
+          <button class="btn btn-danger" onclick="gmailDisconnect()">Disconnect</button>
+        </div>
+        <div class="res" id="gmail-res"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sh"><div class="st">Fetch emails</div></div>
+      <div class="sb2">
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <div class="fg" style="margin:0;flex:1"><label class="fl">Business ID</label><input class="fi" id="gmail-fetch-biz" value="1"></div>
+          <div class="fg" style="margin:0;width:70px"><label class="fl">Limit</label><input class="fi" id="gmail-limit" value="5"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button class="btn btn-p" onclick="fetchEmails(false)">Fetch all</button>
+          <button class="btn" onclick="fetchEmails(true)">Unread only</button>
+        </div>
+        <div class="res" id="gmail-emails-res"></div>
+        <div id="gmail-inbox" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WHATSAPP -->
+<div class="page" id="pg-whatsapp">
+  <div class="tb">
+    <div><div class="pt">WhatsApp</div><div class="ps">Connect your business number and let AI reply to customers on WhatsApp</div></div>
+    <div class="tba" id="whatsapp-status-badge"></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px">
+    <div class="sec">
+      <div class="sh"><div class="st">Connect WhatsApp</div></div>
+      <div class="sb2">
+        <div class="banner">💡 <span>Get your <b>Phone Number ID</b> and <b>permanent access token</b> from Meta Business Manager → WhatsApp → API Setup.</span></div>
+        <div class="fg"><label class="fl">Business ID</label><input class="fi" id="wa-biz" placeholder="1" value="${CURRENT_BUSINESS_ID}"></div>
+        <div class="fg"><label class="fl">Your WhatsApp number</label><input class="fi" id="wa-number" placeholder="+92 300 1234567"></div>
+        <div class="fg"><label class="fl">Phone Number ID</label><input class="fi" id="wa-phone-id" placeholder="1029384756..."></div>
+        <div class="fg"><label class="fl">Access token</label><input class="fi" id="wa-token" type="password" placeholder="EAAG..."></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="whatsappConnect()">Connect WhatsApp →</button>
+          <button class="btn" onclick="whatsappStatus()">Check status</button>
+          <button class="btn btn-danger" onclick="whatsappDisconnect()">Disconnect</button>
+        </div>
+        <div class="res" id="wa-res"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sh"><div class="st">Send a test message</div></div>
+      <div class="sb2">
+        <div class="fg"><label class="fl">To (with country code)</label><input class="fi" id="wa-send-to" placeholder="+92 300 1234567"></div>
+        <div class="fg"><label class="fl">Message</label><input class="fi" id="wa-send-msg" placeholder="Hi! This is a test from AgentHub."></div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button class="btn btn-p" onclick="whatsappSend()">Send message</button>
+          <button class="btn" onclick="whatsappAgentReply()">Test AI reply</button>
+        </div>
+        <div class="res" id="wa-send-res"></div>
+      </div>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:16px">
+    <div class="sec">
+      <div class="sh"><div class="st">Recent conversation activity</div><button class="btn btn-sm" onclick="whatsappDashboard()">↻ Refresh</button></div>
+      <div class="sb2">
+        <div class="res" id="wa-dash-res"></div>
+        <div id="wa-inbox" style="margin-top:8px"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sh"><div class="st">Analytics</div><button class="btn btn-sm" onclick="whatsappAnalytics()">↻ Refresh</button></div>
+      <div class="sb2">
+        <div class="res" id="wa-analytics-res"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="st">Automation playbooks</div><button class="btn btn-sm" onclick="whatsappPlaybooks()">↻ Refresh</button></div>
+    <div class="sb2" id="wa-playbooks"><div style="color:var(--muted);font-size:12px">Loading...</div></div>
+  </div>
+</div>
+
+<!-- SHOPIFY -->
+<div class="page" id="pg-shopify">
+  <div class="tb">
+    <div><div class="pt">Shopify</div><div class="ps">Connect your store and manage orders</div></div>
+    <div class="tba" id="shopify-status-badge"></div>
+  </div>
+  <div class="sec" style="margin-bottom:16px">
+    <div class="sh"><div class="st">Connect Shopify store</div></div>
+    <div class="sb2">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+        <div class="fg" style="margin:0;flex:1"><label class="fl">Shop domain</label><input class="fi" id="shop-domain" placeholder="mystore.myshopify.com"></div>
+        <div class="fg" style="margin:0;width:90px"><label class="fl">Business ID</label><input class="fi" id="shop-biz" value="1"></div>
+        <button class="btn btn-p" onclick="shopifyConnect()">Install app →</button>
+        <button class="btn" onclick="shopifyStatus()">Check status</button>
+      </div>
+      <div class="res" id="shopify-status-res"></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="sec">
+      <div class="sh"><div class="st">Orders</div></div>
+      <div class="sb2">
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <select class="fi" id="shop-status" style="width:130px"><option value="any">All statuses</option><option value="unfulfilled">Unfulfilled</option><option value="paid">Paid</option><option value="cancelled">Cancelled</option></select>
+          <button class="btn btn-p btn-sm" onclick="shopifyOrders()">Fetch orders</button>
+        </div>
+        <div class="res" id="shopify-orders-res"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sh"><div class="st">Products & inventory</div></div>
+      <div class="sb2" style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn" onclick="apiCall('GET','/shopify/products?business_id=${CURRENT_BUSINESS_ID}','shopify-prod-res','Fetching products...')">Fetch products</button>
+        <button class="btn" onclick="apiCall('GET','/shopify/low-stock?business_id=${CURRENT_BUSINESS_ID}&threshold=5','shopify-prod-res','Checking low stock...')">Check low stock (≤5)</button>
+        <button class="btn" onclick="apiCall('GET','/shopify/customers?business_id=${CURRENT_BUSINESS_ID}','shopify-prod-res','Fetching customers...')">Fetch customers</button>
+        <div class="res" id="shopify-prod-res"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ECOMMERCE -->
+<div class="page" id="pg-ecommerce">
+  <div class="tb">
+    <div><div class="pt">Ecommerce</div><div class="ps">Connect Shopify, WooCommerce, and Amazon</div></div>
+  </div>
+  <div class="g3">
+    <div class="ic">
+      <div class="ic-top"><div class="ic-logo">🛍️</div><button class="tog on" id="tog-shopify" onclick="toggleTog(this,'Shopify')"></button></div>
+      <div class="ic-name">Shopify</div>
+      <div class="ic-desc">Orders, inventory, customers, fulfillments across your Shopify store.</div>
+      <span class="badge bg" id="st-shopify"><span class="dot"></span> Connected</span>
+      <button class="btn btn-sm" onclick="go('shopify',null)">Configure →</button>
+    </div>
+    <div class="ic">
+      <div class="ic-top"><div class="ic-logo">🛒</div><button class="tog" id="tog-woo" onclick="toggleTog(this,'WooCommerce')"></button></div>
+      <div class="ic-name">WooCommerce</div>
+      <div class="ic-desc">Connect your WordPress store. Manage orders, refunds, and stock.</div>
+      <span class="badge ba" id="st-woo"><span class="dot"></span> Not connected</span>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px">
+        <input class="fi" id="woo-url" placeholder="https://mystore.com" style="font-size:11px;padding:6px 9px">
+        <input class="fi" id="woo-key" placeholder="Consumer key" style="font-size:11px;padding:6px 9px">
+        <input class="fi" id="woo-secret" placeholder="Consumer secret" type="password" style="font-size:11px;padding:6px 9px">
+        <button class="btn btn-p btn-sm" onclick="connectWoo()">Connect</button>
+      </div>
+      <div class="res" id="woo-res"></div>
+    </div>
+    <div class="ic">
+      <div class="ic-top"><div class="ic-logo">📦</div><button class="tog" id="tog-amz" onclick="toggleTog(this,'Amazon')"></button></div>
+      <div class="ic-name">Amazon SP-API</div>
+      <div class="ic-desc">FBA inventory, order tracking, catalog data and reports.</div>
+      <span class="badge br" id="st-amz"><span class="dot"></span> Not connected</span>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px">
+        <input class="fi" id="amz-seller" placeholder="Seller ID" style="font-size:11px;padding:6px 9px">
+        <button class="btn btn-p btn-sm" onclick="connectAmz()">Enable</button>
+      </div>
+      <div class="res" id="amz-res"></div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:16px">
+    <div class="sh"><div class="st">WooCommerce endpoints</div></div>
+    <div class="sb2" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-sm" onclick="apiCall('GET','/woocommerce/orders?business_id=${CURRENT_BUSINESS_ID}','woo-ep-res','Fetching WooCommerce orders...')">GET /woocommerce/orders</button>
+      <button class="btn btn-sm" onclick="apiCall('GET','/woocommerce/products?business_id=${CURRENT_BUSINESS_ID}','woo-ep-res','Fetching products...')">GET /woocommerce/products</button>
+      <button class="btn btn-sm" onclick="apiCall('GET','/woocommerce/low-stock?business_id=${CURRENT_BUSINESS_ID}','woo-ep-res','Checking stock...')">GET /woocommerce/low-stock</button>
+      <button class="btn btn-sm" onclick="apiCall('GET','/woocommerce/reports/sales?business_id=${CURRENT_BUSINESS_ID}','woo-ep-res','Fetching sales...')">GET /woocommerce/reports/sales</button>
+      <div class="res" id="woo-ep-res" style="width:100%"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS PAGE -->
+<div class="page" id="pg-analytics">
+  <div class="tb">
+    <div>
+      <div class="pt">Analytics</div>
+      <div class="ps">AI performance, savings, and business intelligence</div>
+    </div>
+    <div class="tba">
+      <input class="fi" id="an-biz" value="1" style="width:70px" placeholder="Biz ID">
+      <select class="btn btn-sm" id="an-days" style="cursor:pointer">
+        <option value="7">Last 7 days</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="90">Last 90 days</option>
+      </select>
+      <button class="btn btn-p btn-sm" onclick="loadAllAnalytics()">↻ Refresh</button>
+    </div>
+  </div>
+
+  <!-- AI Score banner -->
+  <div style="background:linear-gradient(135deg,rgba(124,111,205,.18),rgba(124,111,205,.05));border:1px solid rgba(124,111,205,.25);border-radius:16px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+    <div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:4px">AgentHub AI Score</div>
+      <div style="font-size:48px;font-weight:800;letter-spacing:-2px;color:var(--accent2)" id="an-score-val">—</div>
+      <div style="font-size:13px;color:var(--muted)" id="an-score-grade">Loading...</div>
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap" id="an-score-breakdown"></div>
+    <div style="margin-left:auto;text-align:right">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Hours saved (30d)</div>
+      <div style="font-size:28px;font-weight:700;color:var(--green)" id="an-hours">—</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Salary saved: <span style="color:var(--green)" id="an-salary">—</span></div>
+    </div>
+  </div>
+
+  <!-- KPI strip -->
+  <div class="sg" style="grid-template-columns:repeat(6,1fr);margin-bottom:20px">
+    <div class="sc"><div class="sl">AI Replies (30d)</div><div class="sv" id="an-total">—</div><div class="sd snt">generated</div></div>
+    <div class="sc"><div class="sl">Sent</div><div class="sv" id="an-sent">—</div><div class="sd sup" id="an-approval">—% approval</div></div>
+    <div class="sc"><div class="sl">Pending</div><div class="sv" id="an-pending">—</div><div class="sd snt">need review</div></div>
+    <div class="sc"><div class="sl">Top Category</div><div class="sv" style="font-size:16px" id="an-top-cat">—</div><div class="sd snt">most asked</div></div>
+    <div class="sc"><div class="sl">Avg Reply</div><div class="sv" id="an-avg-len">—</div><div class="sd snt">words</div></div>
+    <div class="sc"><div class="sl">Customers</div><div class="sv" id="an-customers">—</div><div class="sd snt">unique contacts</div></div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px">
+
+    <!-- Email chart -->
+    <div class="sec">
+      <div class="sh">
+        <div class="st">📧 Email activity (daily)</div>
+        <span class="badge bp" id="an-chart-days">30d</span>
+      </div>
+      <div class="sb2">
+        <canvas id="emailChart" height="140"></canvas>
+        <div id="an-chart-fallback" style="color:var(--muted);font-size:12px;text-align:center;padding:30px 0;display:none">No data yet — start processing emails to see charts</div>
+      </div>
+    </div>
+
+    <!-- Category pie -->
+    <div class="sec">
+      <div class="sh"><div class="st">🎯 What customers ask about</div></div>
+      <div class="sb2" style="display:flex;gap:16px;align-items:center">
+        <canvas id="catChart" width="140" height="140" style="flex-shrink:0"></canvas>
+        <div id="cat-legend" style="flex:1;font-size:12px;display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px">
+
+    <!-- AI Performance -->
+    <div class="sec">
+      <div class="sh"><div class="st">🤖 AI Performance</div></div>
+      <div class="sb2">
+        <div style="display:flex;flex-direction:column;gap:10px" id="an-perf-list">
+          <div style="color:var(--muted);font-size:12px">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent leaderboard -->
+    <div class="sec">
+      <div class="sh"><div class="st">🏆 Agent leaderboard</div></div>
+      <div style="padding:0 16px" id="an-agent-board">
+        <div style="color:var(--muted);font-size:12px;padding:14px 0">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px">
+
+    <!-- Top customers -->
+    <div class="sec">
+      <div class="sh"><div class="st">👥 Top customers</div></div>
+      <div style="padding:0 16px" id="an-top-customers">
+        <div style="color:var(--muted);font-size:12px;padding:14px 0">Loading...</div>
+      </div>
+    </div>
+
+    <!-- AI Savings breakdown -->
+    <div class="sec">
+      <div class="sh"><div class="st">💰 AI Savings breakdown</div></div>
+      <div class="sb2" id="an-savings-detail">
+        <div style="color:var(--muted);font-size:12px">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live activity -->
+  <div class="sec">
+    <div class="sh">
+      <div class="st">⚡ Live activity</div>
+      <button class="btn btn-sm" onclick="loadLiveActivity()">↻</button>
+    </div>
+    <div style="padding:0 16px;max-height:280px;overflow-y:auto" id="an-live">
+      <div style="color:var(--muted);font-size:12px;padding:14px 0">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Human review stats -->
+  <div class="sec" style="margin-top:18px">
+    <div class="sh"><div class="st">👤 Human review quality</div></div>
+    <div class="sb2">
+      <div style="display:flex;gap:20px;flex-wrap:wrap" id="an-review-stats">
+        <div style="color:var(--muted);font-size:12px">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /pg-analytics -->
+
+<!-- AGENTS -->
+<div class="page" id="pg-agents">
+  <div class="tb">
+    <div><div class="pt">My Agents</div><div class="ps">Agents installed and running for your business</div></div>
+    <div class="tba">
+      <button class="btn btn-sm" onclick="loadMyAgents()">↻ Refresh</button>
+      <button class="btn btn-p btn-sm" onclick="go('marketplace',null)">+ Browse marketplace</button>
+    </div>
+  </div>
+  <div class="sec" style="margin-bottom:16px">
+    <div class="sh"><div class="st">Seed sample agents (first time only)</div></div>
+    <div class="sb2">
+      <button class="btn" onclick="seedAgents()">Seed 3 sample agents to DB</button>
+      <div class="res" id="seed-res"></div>
+    </div>
+  </div>
+  <div id="my-agents-grid" class="g3">
+    <div style="color:var(--muted);font-size:12px;grid-column:1/-1">Loading...</div>
+  </div>
+</div>
+
+<!-- MARKETPLACE -->
+<div class="page" id="pg-marketplace">
+  <div class="tb">
+    <div><div class="pt">Marketplace</div><div class="ps">Discover and install AI agents</div></div>
+    <div class="tba">
+      <button class="btn btn-sm" onclick="loadMarketplace()">↻ Refresh</button>
+      <button class="btn btn-sm" onclick="dedupeAgents()">🧹 Fix duplicates / add WhatsApp agent</button>
+    </div>
+  </div>
+  <div class="banner">🎉 <span><b>All agents are free</b> — install as many as you need, no charge.</span></div>
+  <div class="fg" style="max-width:280px;margin-bottom:16px">
+    <label class="fl">Install to business ID</label>
+    <input class="fi" id="mkt-biz" value="1" placeholder="1">
+  </div>
+  <div id="mkt-grid" class="g3">
+    <div style="color:var(--muted);font-size:12px;grid-column:1/-1">Loading...</div>
+  </div>
+  <div class="res" id="mkt-res" style="margin-top:12px"></div>
+</div>
+
+<!-- REPLIES -->
+<div class="page" id="pg-replies">
+  <div class="tb">
+    <div><div class="pt">AI Replies</div><div class="ps">Review and approve AI-generated email drafts</div></div>
+    <div class="tba">
+      <input class="fi" id="rep-biz" value="1" style="width:70px" placeholder="Biz ID">
+      <button class="btn btn-sm" onclick="loadReplies()">Load pending</button>
+    </div>
+  </div>
+  <div id="replies-list">
+    <div style="color:var(--muted);font-size:12px">Click "Load pending" to fetch AI drafts from your backend.</div>
+  </div>
+  <div class="res" id="rep-res"></div>
+</div>
+
+<!-- KNOWLEDGE BASE -->
+<div class="page" id="pg-knowledge">
+  <div class="tb">
+    <div><div class="pt">Knowledge Base</div><div class="ps">Business facts the AI reply agent will use as ground truth (RAG)</div></div>
+    <div class="tba">
+      <input class="fi" id="kb-biz" value="1" style="width:70px" placeholder="Biz ID">
+      <button class="btn btn-sm" onclick="loadKnowledgeDocs()">↻ Refresh</button>
+    </div>
+  </div>
+
+  <div class="sec" style="margin-bottom:16px">
+    <div class="sh"><div class="st">Add a document</div></div>
+    <div class="sb2">
+      <div class="fg" style="margin-bottom:8px">
+        <label class="fl">Title</label>
+        <input class="fi" id="kb-title" placeholder="e.g. Refund Policy">
+      </div>
+      <div class="fg" style="margin-bottom:8px">
+        <label class="fl">Content (paste text — policy, FAQ, product info, etc.)</label>
+        <textarea id="kb-content" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px;color:var(--text);font-size:12px;line-height:1.7;resize:vertical;min-height:120px;font-family:inherit;outline:none" placeholder="Paste the document text here..."></textarea>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="addKnowledgeDoc()">+ Add / replace document</button>
+    </div>
+  </div>
+
+  <div class="sec" style="margin-bottom:16px">
+    <div class="sh"><div class="st">Test retrieval</div></div>
+    <div class="sb2">
+      <div style="display:flex;gap:8px">
+        <input class="fi" id="kb-test-query" style="flex:1" placeholder="Type a customer question to see what the AI would retrieve...">
+        <button class="btn btn-sm" onclick="testKnowledgeSearch()">Search</button>
+      </div>
+      <div id="kb-test-results" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div id="kb-docs-list">
+    <div style="color:var(--muted);font-size:12px">Click "Refresh" to load documents.</div>
+  </div>
+  <div class="res" id="kb-res"></div>
+</div>
+
+<!-- LOGS -->
+<div class="page" id="pg-logs">
+  <div class="tb">
+    <div><div class="pt">Agent logs</div><div class="ps">Activity from all running agents</div></div>
+    <div class="tba"><button class="btn btn-sm" onclick="loadLogs()">↻ Refresh</button></div>
+  </div>
+  <div class="sec">
+    <div style="padding:0 16px" id="logs-list">
+      <div style="color:var(--muted);font-size:12px;padding:14px 0">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="pg-settings">
+  <div class="tb">
+    <div><div class="pt">Settings</div><div class="ps">Connection and JWT configuration</div></div>
+  </div>
+  <div class="g2">
+    <div class="sec">
+      <div class="sh"><div class="st">Backend connection</div></div>
+      <div class="sb2">
+        <div class="fg"><label class="fl">Backend URL</label><input class="fi" id="cfg-backend" value="http://localhost:8000"></div>
+        <div class="fg"><label class="fl">JWT token (auto-filled on login)</label><input class="fi" id="cfg-jwt" placeholder="Paste token or login above" type="password"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="pingBackend()">Ping backend</button>
+          <button class="btn" onclick="copyJwt()">Copy JWT</button>
+        </div>
+        <div class="res" id="ping-res"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sh"><div class="st">Current user</div></div>
+      <div class="sb2">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Fetched from <code style="color:var(--accent2)">/auth/me</code></div>
+        <button class="btn" onclick="apiCall('GET','/auth/me','me-res','Fetching profile...')">GET /auth/me</button>
+        <div class="res" id="me-res"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div id="toast"><span id="ti"></span><span id="tm"></span></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// CHART HELPERS (pure canvas — no library needed)
+// ══════════════════════════════════════════════════════════════════
+
+function drawBarChart(canvasId, labels, datasets) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || canvas.width;
+  const H = canvas.height;
+  canvas.width = W;
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 14, right: 10, bottom: 28, left: 28 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+
+  const allVals = datasets.flatMap(d => d.data);
+  const maxVal  = Math.max(...allVals, 1);
+
+  const barGroupW = chartW / labels.length;
+  const barW      = Math.max(2, (barGroupW / datasets.length) - 2);
+
+  const COLORS = ['rgba(124,111,205,0.7)', 'rgba(34,197,94,0.6)', 'rgba(59,130,246,0.5)'];
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth   = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (chartH / 4) * i;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + chartW, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '9px -apple-system,sans-serif';
+    ctx.fillText(Math.round(maxVal - (maxVal / 4) * i), 2, y + 3);
+  }
+
+  datasets.forEach((ds, di) => {
+    ctx.fillStyle = COLORS[di % COLORS.length];
+    ds.data.forEach((val, i) => {
+      const x = pad.left + i * barGroupW + di * (barW + 1);
+      const barH = (val / maxVal) * chartH;
+      const y = pad.top + chartH - barH;
+      ctx.fillRect(x, y, barW, barH);
+    });
+  });
+
+  // x labels (every nth)
+  const step = Math.ceil(labels.length / 7);
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '9px -apple-system,sans-serif';
+  ctx.textAlign = 'center';
+  labels.forEach((lbl, i) => {
+    if (i % step === 0) {
+      const x = pad.left + i * barGroupW + barGroupW / 2;
+      ctx.fillText(lbl.slice(5), x, H - 6); // show MM-DD
+    }
+  });
+}
+
+function drawDonutChart(canvasId, labels, values, colors) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width; const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W / 2; const cy = H / 2;
+  const r  = Math.min(W, H) / 2 - 8;
+  const inner = r * 0.55;
+
+  const total = values.reduce((a, b) => a + b, 0);
+  if (!total) return;
+  let angle = -Math.PI / 2;
+
+  values.forEach((val, i) => {
+    const slice = (val / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, angle, angle + slice);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    angle += slice;
+  });
+
+  // hole
+  ctx.beginPath();
+  ctx.arc(cx, cy, inner, 0, Math.PI * 2);
+  ctx.fillStyle = '#1a1a28';
+  ctx.fill();
+
+  // center text
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.font = 'bold 11px -apple-system,sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(total, cx, cy - 4);
+  ctx.font = '9px -apple-system,sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.fillText('total', cx, cy + 9);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// LOAD ALL ANALYTICS
+// ══════════════════════════════════════════════════════════════════
+
+async function loadAllAnalytics() {
+  const biz  = document.getElementById('an-biz')?.value || '1';
+  const days = document.getElementById('an-days')?.value || '30';
+
+  document.getElementById('an-chart-days').textContent = days + 'd';
+
+  try { await loadOverview(biz, days); }    catch(e) { console.error('overview', e); }
+  try { await loadEmailAnalytics(biz, days); } catch(e) { console.error('emails', e); }
+  try { await loadCategoryAnalytics(biz, days); } catch(e) { console.error('cats', e); }
+  try { await loadAiPerformance(biz, days); }  catch(e) { console.error('perf', e); }
+  try { await loadAgentBoard(biz, days); }     catch(e) { console.error('agents', e); }
+  try { await loadTopCustomers(biz, days); }   catch(e) { console.error('customers', e); }
+  try { await loadSavings(biz, days); }        catch(e) { console.error('savings', e); }
+  try { await loadLiveActivity(biz); }         catch(e) { console.error('live', e); }
+  try { await loadScore(biz); }               catch(e) { console.error('score', e); }
+  try { await loadCharts(biz, days); }         catch(e) { console.error('charts', e); }
+}
+
+async function loadOverview(biz, days) {
+  const data = await api('GET', `/analytics/overview?business_id=${biz}`);
+  document.getElementById('an-total').textContent   = data.last_30_days?.total_replies_generated ?? '—';
+  document.getElementById('an-sent').textContent    = data.last_30_days?.sent ?? '—';
+  document.getElementById('an-pending').textContent = data.today?.pending_approval ?? '—';
+  document.getElementById('an-approval').textContent = (data.last_30_days?.approval_rate_pct ?? 0) + '% approval';
+  document.getElementById('an-avg-len').textContent  = data.last_30_days?.avg_reply_length_words ?? '—';
+  document.getElementById('an-hours').textContent    = data.ai_savings?.hours_saved ?? '—';
+  document.getElementById('an-salary').textContent   = '$' + (data.ai_savings?.estimated_salary_saved ?? 0);
+  const cats = data.category_breakdown || {};
+  const topCat = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('an-top-cat').textContent  = topCat ? topCat[0] : '—';
+}
+
+async function loadScore(biz) {
+  const data = await api('GET', `/analytics/score?business_id=${biz}`);
+  document.getElementById('an-score-val').textContent   = data.overall ?? '—';
+  document.getElementById('an-score-grade').textContent = 'Grade: ' + (data.grade ?? '—');
+
+  const bd = data.breakdown || {};
+  const LABELS = {speed:'⚡ Speed', accuracy:'🎯 Accuracy', approval:'✅ Approval', automation:'🤖 Automation', satisfaction:'😊 Satisfaction'};
+  document.getElementById('an-score-breakdown').innerHTML = Object.entries(bd).map(([k, v]) => `
+    <div style="text-align:center">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:3px">${LABELS[k]||k}</div>
+      <div style="font-size:18px;font-weight:700;color:var(--accent2)">${v}</div>
+      <div style="width:48px;height:4px;background:var(--border2);border-radius:2px;margin-top:4px">
+        <div style="width:${v}%;height:100%;background:var(--accent);border-radius:2px;max-width:100%"></div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadEmailAnalytics(biz, days) {
+  const data = await api('GET', `/analytics/emails?business_id=${biz}&days=${days}`);
+  // customers count
+  document.getElementById('an-customers').textContent = data.top_customers?.length ?? '—';
+}
+
+async function loadCategoryAnalytics(biz, days) {
+  const data = await api('GET', `/analytics/categories?business_id=${biz}&days=${days}`);
+  const bd = data.breakdown || {};
+  const CAT_COLORS = ['rgba(124,111,205,.8)','rgba(34,197,94,.75)','rgba(239,68,68,.75)','rgba(245,158,11,.75)','rgba(59,130,246,.75)','rgba(168,85,247,.75)'];
+  const labels = Object.keys(bd);
+  const values = labels.map(k => bd[k].count);
+
+  if (labels.length) {
+    drawDonutChart('catChart', labels, values, CAT_COLORS);
+    document.getElementById('cat-legend').innerHTML = labels.map((l, i) => `
+      <div style="display:flex;align-items:center;gap:7px">
+        <div style="width:10px;height:10px;border-radius:2px;background:${CAT_COLORS[i%CAT_COLORS.length]};flex-shrink:0"></div>
+        <span>${l}</span>
+        <span style="margin-left:auto;color:var(--muted)">${bd[l].percent}%</span>
+      </div>`).join('');
+  }
+}
+
+async function loadAiPerformance(biz, days) {
+  const data = await api('GET', `/analytics/ai-performance?business_id=${biz}&days=${days}`);
+  const r = data.rates || {}; const q = data.quality || {}; const t = data.totals || {};
+  const rows = [
+    ['Approval rate',       r.approval_rate_pct + '%',   r.approval_rate_pct >= 80 ? 'bg' : 'ba'],
+    ['Rejection rate',      r.rejection_rate_pct + '%',  r.rejection_rate_pct <= 10 ? 'bg' : 'br'],
+    ['Automation rate',     r.automation_rate_pct + '%', r.automation_rate_pct >= 70 ? 'bg' : 'ba'],
+    ['Avg reply length',    q.avg_reply_length_words + ' words', 'bp'],
+    ['Avg response time',   q.avg_response_time_sec + 's', 'bg'],
+    ['Replies generated',   t.replies_generated, 'bp'],
+    ['Approved',            t.approved, 'bg'],
+    ['Rejected',            t.rejected, 'br'],
+  ];
+  document.getElementById('an-perf-list').innerHTML = rows.map(([label, val, cls]) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:12px;color:var(--muted)">${label}</span>
+      <span class="badge ${cls}">${val ?? '—'}</span>
+    </div>`).join('');
+
+  // Update review stats
+  document.getElementById('an-review-stats').innerHTML = `
+    <div style="text-align:center;padding:12px 20px;background:var(--surface);border-radius:8px">
+      <div style="font-size:22px;font-weight:700;color:var(--green)">${t.approved||0}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Approved</div>
+    </div>
+    <div style="text-align:center;padding:12px 20px;background:var(--surface);border-radius:8px">
+      <div style="font-size:22px;font-weight:700;color:var(--red)">${t.rejected||0}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Rejected</div>
+    </div>
+    <div style="text-align:center;padding:12px 20px;background:var(--surface);border-radius:8px">
+      <div style="font-size:22px;font-weight:700;color:var(--amber)">${t.edited||0}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Edited before send</div>
+    </div>
+    <div style="text-align:center;padding:12px 20px;background:var(--surface);border-radius:8px">
+      <div style="font-size:22px;font-weight:700;color:var(--accent2)">${q.avg_response_time_sec||0}s</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Avg response time</div>
+    </div>`;
+}
+
+async function loadAgentBoard(biz, days) {
+  const data = await api('GET', `/analytics/agents?business_id=${biz}&days=${days}`);
+  const lb = data.leaderboard || [];
+  const el = document.getElementById('an-agent-board');
+  if (!lb.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:14px 0">No agent data yet</div>'; return; }
+  const maxActions = lb[0]?.actions || 1;
+  el.innerHTML = lb.map((a, i) => `
+    <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <div style="font-size:12px;font-weight:600">${['🥇','🥈','🥉'][i]||'  '} ${a.agent}</div>
+        <div style="font-size:11px;color:var(--accent2)">${a.actions} actions · ${a.share_pct}%</div>
+      </div>
+      <div style="height:4px;background:var(--border2);border-radius:2px">
+        <div style="width:${(a.actions/maxActions)*100}%;height:100%;background:var(--accent);border-radius:2px;transition:width .6s"></div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadTopCustomers(biz, days) {
+  const data = await api('GET', `/analytics/customers?business_id=${biz}&days=${days}`);
+  const el = document.getElementById('an-top-customers');
+  const tc = data.top_customers || [];
+  document.getElementById('an-customers').textContent = data.total_unique ?? '—';
+  if (!tc.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:14px 0">No customers yet</div>'; return; }
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:10px;color:var(--muted);text-transform:uppercase;padding:0 0 4px;border-bottom:1px solid var(--border)">
+      <span>Customer</span><span>Messages</span>
+    </div>` +
+    tc.slice(0,8).map((c, i) => `
+      <div class="li" style="align-items:center">
+        <div class="lt" style="min-width:20px;font-family:inherit;color:var(--muted)">#${i+1}</div>
+        <div style="flex:1;font-size:12px">${c.email}</div>
+        <span class="badge bp">${c.messages}</span>
+      </div>`).join('') +
+    `<div style="margin-top:10px;font-size:11px;color:var(--muted)">
+      New: <strong style="color:var(--text)">${data.new_customers}</strong> ·
+      Returning: <strong style="color:var(--text)">${data.returning_customers}</strong> ·
+      Avg msgs: <strong style="color:var(--text)">${data.engagement?.avg_messages_per_customer}</strong>
+    </div>`;
+}
+
+async function loadSavings(biz, days) {
+  const data = await api('GET', `/analytics/savings?business_id=${biz}&days=${days}`);
+  const el = document.getElementById('an-savings-detail');
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:var(--surface);border-radius:8px;padding:14px;border:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">CONVERSATIONS AUTOMATED</div>
+        <div style="font-size:26px;font-weight:700;color:var(--accent2)">${data.conversations_automated}</div>
+      </div>
+      <div style="background:var(--surface);border-radius:8px;padding:14px;border:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">HOURS SAVED</div>
+        <div style="font-size:26px;font-weight:700;color:var(--green)">${data.hours_saved}</div>
+      </div>
+      <div style="background:var(--surface);border-radius:8px;padding:14px;border:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">SALARY SAVED (EST.)</div>
+        <div style="font-size:26px;font-weight:700;color:var(--green)">$${data.estimated_salary_saved_usd}</div>
+      </div>
+      <div style="background:var(--surface);border-radius:8px;padding:14px;border:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">FTE EQUIVALENT</div>
+        <div style="font-size:26px;font-weight:700;color:var(--amber)">${data.full_time_employee_equiv}</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--dim)">
+      Based on ${data.assumption?.minutes_per_reply} min/reply · $${data.assumption?.hourly_rate_usd}/hr · ${data.assumption?.working_hours_day}h/day
+    </div>`;
+}
+
+async function loadLiveActivity(bizOverride) {
+  const biz = bizOverride || document.getElementById('an-biz')?.value || '1';
+  const data = await api('GET', `/analytics/live?business_id=${biz}&limit=25`);
+  const el = document.getElementById('an-live');
+  const events = data.events || [];
+  if (!events.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:14px 0">No activity yet. Once agents run you\'ll see the live feed here.</div>';
+    return;
+  }
+  const TYPE_ICONS = {email_replied:'📧',reply_sent:'✉️',refund_created:'💸',order_shipped:'📦',ticket_created:'🎫',agent_action:'🤖',reply_generated:'✍️'};
+  el.innerHTML = events.map(e => `
+    <div class="li">
+      <div class="lt">${e.time||'—'}</div>
+      <div class="lm">
+        <span style="font-size:14px;margin-right:5px">${TYPE_ICONS[e.event_type]||'⚡'}</span>
+        ${e.description}
+        ${e.agent ? `<span class="la" style="margin-left:6px">[${e.agent}]</span>` : ''}
+        ${e.channel ? `<span class="badge bb" style="margin-left:4px">${e.channel}</span>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+async function loadCharts(biz, days) {
+  const data = await api('GET', `/analytics/charts?business_id=${biz}&days=${days}`);
+  const hasData = data.emails_generated?.some(v => v > 0);
+  if (!hasData) {
+    document.getElementById('an-chart-fallback').style.display = 'block';
+    return;
+  }
+  document.getElementById('an-chart-fallback').style.display = 'none';
+  drawBarChart('emailChart', data.labels, [
+    { data: data.emails_generated, label: 'Generated' },
+    { data: data.emails_sent,      label: 'Sent' },
+  ]);
+}
+
+// Auto-load when page is shown
+const _origGo = typeof go === 'function' ? go : null;
+// Override go() to auto-load analytics
+document.addEventListener('DOMContentLoaded', () => {
+  const origNav = window.go;
+  window.go = function(id, btn) {
+    origNav && origNav(id, btn);
+    if (id === 'analytics') loadAllAnalytics();
+  };
+});
+</script>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────
+let JWT = localStorage.getItem("token") || "";
+let USER = null;
+let CURRENT_BUSINESS_ID = null;
+
+const BE = () => document.getElementById('cfg-backend')?.value || 'http://localhost:8000';
+
+// ── Toast ──────────────────────────────────────────────────────────────
+function toast(icon, msg, ms=2800) {
+  document.getElementById('ti').textContent = icon;
+  document.getElementById('tm').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), ms);
+}
+
+// ── Navigation ─────────────────────────────────────────────────────────
+function go(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('pg-' + id);
+  if (pg) pg.classList.add('active');
+  if (btn) btn.classList.add('active');
+  // auto-load data
+  if (id === 'dashboard') loadDashboard();
+  if (id === 'logs') loadLogs();
+  if (id === 'agents') loadMyAgents();
+  if (id === 'marketplace') loadMarketplace();
+  if (id === 'business') loadBusinesses();
+  if (id === 'replies') loadReplies();
+  if (id === 'knowledge') loadKnowledgeDocs();
+  if (id === 'whatsapp') { whatsappStatus(); whatsappDashboard(); whatsappPlaybooks(); }
+}
+
+// ── API helper ─────────────────────────────────────────────────────────
+async function api(method, path, body=null) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (JWT) headers['Authorization'] = 'Bearer ' + JWT;
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(BE() + path, opts);
+  const data = await res.json();
+  if (!res.ok) throw { status: res.status, detail: data.detail || JSON.stringify(data) };
+  return data;
+}
+
+async function apiCall(method, path, resId, msg) {
+  const el = document.getElementById(resId);
+  if (el) { el.style.display='block'; el.textContent = '⏳ ' + msg; }
+  try {
+    const data = await api(method, path);
+    if (el) el.textContent = JSON.stringify(data, null, 2);
+    return data;
+  } catch(e) {
+    if (el) el.textContent = '❌ ' + (e.detail || e.message || 'Backend not reachable');
+    toast('❌', e.detail || 'Error — is uvicorn running?');
+    throw e;
+  }
+}
+
+// ── Auth ───────────────────────────────────────────────────────────────
+function authTab(tab, el) {
+  document.querySelectorAll('.atab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('loginF').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('registerF').style.display = tab==='register' ? 'block' : 'none';
+  document.getElementById('authErr').style.display = 'none';
+}
+
+function showAuthErr(msg) {
+  const e = document.getElementById('authErr');
+  e.textContent = msg; e.style.display = 'block';
+}
+
+async function doLogin() {
+  const email = document.getElementById('lemail').value.trim();
+  const pass = document.getElementById('lpass').value;
+  if (!email || !pass) { showAuthErr('Enter email and password'); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Signing in...';
+  try {
+    const data = await api('POST', '/auth/login', { email, password: pass });
+    JWT = data.access_token;
+    localStorage.setItem("token", JWT);
+    JWT = localStorage.getItem("token");
+    localStorage.setItem("token", JWT);
+    document.getElementById('cfg-jwt').value = JWT;
+    await loadMe();
+    await loadBusinesses();
+    document.getElementById('authWrap').style.display = 'none';
+    toast('👋', 'Welcome back!');
+    loadDashboard();
+  } catch(e) {
+    showAuthErr(e.detail || 'Login failed — check email/password');
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'Sign in';
+  }
+}
+
+async function doRegister() {
+  const name = document.getElementById('rname').value.trim();
+  const email = document.getElementById('remail').value.trim();
+  const pass = document.getElementById('rpass').value;
+  if (!name || !email || !pass) { showAuthErr('Fill in all fields'); return; }
+  const btn = document.getElementById('regBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Creating...';
+  try {
+    await api('POST', '/auth/register', { full_name: name, email, password: pass });
+    toast('✅', 'Account created — signing in...');
+    document.getElementById('lemail').value = email;
+    document.getElementById('lpass').value = pass;
+    document.querySelectorAll('.atab')[0].click();
+    setTimeout(doLogin, 400);
+  } catch(e) {
+    showAuthErr(e.detail || 'Registration failed');
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'Create account';
+  }
+}
+
+async function loadMe() {
+  const data = await api('GET', '/auth/me');
+  USER = data;
+  document.getElementById('sbAv').textContent = (data.name || data.email || '?')[0].toUpperCase();
+  document.getElementById('sbName').textContent = data.name || '—';
+  document.getElementById('sbEmail').textContent = data.email || '—';
+}
+
+function logout() {
+  JWT = ''; USER = null;
+  document.getElementById('authWrap').style.display = 'flex';
+  document.getElementById('lemail').value = '';
+  document.getElementById('lpass').value = '';
+  document.getElementById('sbName').textContent = '—';
+  document.getElementById('sbEmail').textContent = '—';
+  toast('👋', 'Signed out');
+}
+
+// ── Dashboard ──────────────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const data = await api('GET', '/dashboard/');
+    const bizzes = data.businesses || [];
+    const agents = data.installed_agents || [];
+    document.getElementById('db-biz').textContent = bizzes.length;
+    document.getElementById('db-agents').textContent = agents.length;
+
+    // biz list
+    const bl = document.getElementById('db-biz-list');
+    if (bizzes.length === 0) {
+      bl.innerHTML = '<div style="color:var(--muted);font-size:12px">No businesses yet. <button class="btn btn-sm" onclick="go(\'business\',null)" style="margin-left:6px">Create one</button></div>';
+    } else {
+      bl.innerHTML = bizzes.map(b => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface);border-radius:8px;border:1px solid var(--border);margin-bottom:6px">
+          <div><div style="font-size:12.5px;font-weight:600">${b.business_name}</div><div style="font-size:10px;color:var(--muted)">${b.industry} · ID: ${b.id}</div></div>
+          <span class="badge ${b.gmail_connected ? 'bg' : 'ba'}">${b.gmail_connected ? '📧 Gmail on' : 'Gmail off'}</span>
+        </div>`).join('');
+    }
+
+    // agent list
+    const al = document.getElementById('db-agent-list');
+    if (agents.length === 0) {
+      al.innerHTML = '<div style="color:var(--muted);font-size:12px">No agents installed. <button class="btn btn-sm" onclick="go(\'marketplace\',null)" style="margin-left:6px">Browse</button></div>';
+    } else {
+      al.innerHTML = agents.map(a => `
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border-radius:8px;border:1px solid var(--border);margin-bottom:6px">
+          <span style="font-size:16px">🤖</span>
+          <div style="flex:1"><div style="font-size:12px;font-weight:600">Agent ID ${a.agent_id}</div><div style="font-size:10px;color:var(--muted)">Business ${a.business_id}</div></div>
+          <span class="badge ${a.status==='active' ? 'bg' : 'ba'}">${a.status}</span>
+        </div>`).join('');
+    }
+
+    // Gmail stat
+    if (bizzes.length > 0) {
+      const connected = bizzes.filter(b => b.gmail_connected).length;
+      document.getElementById('db-gmail').textContent = connected + '/' + bizzes.length;
+      document.getElementById('db-gmail-sub').textContent = 'businesses connected';
+    }
+  } catch(e) {
+    console.error(e);
+  }
+
+  // replies count
+  try {
+    const biz = CURRENT_BUSINESS_ID;
+    const reps = await api('GET', '/replies/pending?business_id=' + biz);
+    const cnt = Array.isArray(reps) ? reps.length : 0;
+    document.getElementById('db-replies').textContent = cnt;
+    document.getElementById('repliesBadge').textContent = cnt;
+  } catch(e) {}
+
+  loadLogs();
+}
+
+// ── Logs ───────────────────────────────────────────────────────────────
+async function loadLogs() {
+  try {
+    const data = await api('GET', '/logs/');
+    const el = document.getElementById('logs-list');
+    const dbEl = document.getElementById('db-logs');
+    if (!data || data.length === 0) {
+      const html = '<div class="li"><div class="lt">—</div><div class="lm">No logs yet. Run an agent to see activity here.</div></div>';
+      if (el) el.innerHTML = html;
+      if (dbEl) dbEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:14px 0">No logs yet.</div>';
+      return;
+    }
+    const rows = data.slice(0,50).map(l => `
+      <div class="li">
+        <div class="lt">${(l.created_at||'').slice(11,19)||'—'}</div>
+        <div class="lm"><span class="la">[Agent ${l.agent_id||'?'}]</span> ${l.input_text||l.message||'—'}</div>
+      </div>`).join('');
+    if (el) el.innerHTML = rows;
+    if (dbEl) dbEl.innerHTML = data.slice(0,5).map(l => `
+      <div class="li">
+        <div class="lt">${(l.created_at||'').slice(11,19)||'—'}</div>
+        <div class="lm"><span class="la">[Agent ${l.agent_id||'?'}]</span> ${l.input_text||'—'}</div>
+      </div>`).join('');
+  } catch(e) {
+    const el = document.getElementById('logs-list');
+    if (el) el.innerHTML = '<div class="li"><div class="lt">err</div><div class="lm" style="color:var(--red)">Could not load logs — backend offline?</div></div>';
+  }
+}
+
+// ── Business ───────────────────────────────────────────────────────────
+async function createBusiness() {
+  const name = document.getElementById('biz-name').value.trim();
+  const ind  = document.getElementById('biz-industry').value.trim();
+  const url  = document.getElementById('biz-url').value.trim();
+  if (!name) { toast('⚠️','Enter a business name'); return; }
+  const el = document.getElementById('biz-res');
+  el.style.display='block'; el.textContent='Creating...';
+  try {
+    const data = await api('POST','/businesses/',{business_name:name,industry:ind,website_url:url});
+    el.textContent = JSON.stringify(data,null,2);
+    toast('✅','Business created! ID: ' + data.business_id);
+    loadBusinesses();
+  } catch(e) { el.textContent='❌ '+e.detail; }
+}
+
+async function loadBusinesses() {
+  const el = document.getElementById('biz-list');
+  try {
+    const data = await api('GET','/businesses/');
+     if (data.length > 0) {
+        CURRENT_BUSINESS_ID = data[0].id;
+        console.log("Current Business:", CURRENT_BUSINESS_ID);
+    }
+    if (!data || data.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px 0">No businesses yet — create your first one on the left. It only takes a name.</div>';
+      return;
+    }
+    el.innerHTML = data.map(b=>`
+      <div style="padding:10px 12px;background:var(--surface);border-radius:8px;border:1px solid var(--border);margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <div style="font-size:13px;font-weight:600">${b.business_name}</div>
+          <div style="display:flex;gap:5px">
+            <span class="badge ${b.gmail_connected?'bg':'ba'}">${b.gmail_connected?'Gmail ✓':'Gmail ✗'}</span>
+            <span class="badge ${b.whatsapp_connected?'bg':'ba'}">${b.whatsapp_connected?'WhatsApp ✓':'WhatsApp ✗'}</span>
+            <span class="badge ${b.shopify_connected?'bg':'ba'}">${b.shopify_connected?'Shopify ✓':'Shopify ✗'}</span>
+          </div>
+        </div>
+        <div style="font-size:10.5px;color:var(--muted)">${b.industry||'—'} · ${b.website_url||'—'} · ID: ${b.id}</div>
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <button class="btn btn-sm" onclick="setDefaultBiz(${b.id})">⭐ Set as default</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteBiz(${b.id})">🗑️ Remove</button>
+        </div>
+      </div>`).join('');
+  } catch(e) { el.innerHTML='<div style="color:var(--red);font-size:12px">Could not load businesses</div>'; }
+}
+
+function setDefaultBiz(id) {
+  document.getElementById('gmail-biz').value = id;
+  document.getElementById('gmail-fetch-biz').value = id;
+  document.getElementById('shop-biz').value = id;
+  document.getElementById('rep-biz').value = id;
+  document.getElementById('mkt-biz').value = id;
+  toast('✅', 'Default business set to ID ' + id);
+}
+
+async function deleteBiz(id) {
+  if (!confirm('Remove this business? This can\'t be undone.')) return;
+  try {
+    await api('DELETE','/businesses/'+id);
+    toast('🗑️','Business removed');
+    loadBusinesses();
+  } catch(e) { toast('❌',e.detail||'Remove failed'); }
+}
+
+// ── Gmail ──────────────────────────────────────────────────────────────
+async function gmailConnect() {
+
+    const biz = CURRENT_BUSINESS_ID;
+
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+        BE() + "/gmail/connect?business_id=" + biz,
+        {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        toast("❌", data.detail);
+        return;
+    }
+
+    toast("🔗", "Opening Gmail...");
+
+    window.location.href = data.auth_url;
+}
+
+async function gmailStatus() {
+  const biz = CURRENT_BUSINESS_ID;
+  const el = document.getElementById('gmail-res');
+  el.style.display='block'; el.textContent='Checking...';
+  try {
+    const data = await api('GET','/gmail/status?business_id='+biz);
+    el.textContent = JSON.stringify(data,null,2);
+    const badge = document.getElementById('gmail-status-badge');
+    badge.innerHTML = data.gmail_connected
+      ? '<span class="badge bg"><span class="dot"></span> Connected</span>'
+      : '<span class="badge ba"><span class="dot"></span> Not connected</span>';
+    toast(data.gmail_connected?'✅':'⚠️', data.gmail_connected?'Gmail connected':'Not connected');
+  } catch(e) { el.textContent='❌ '+e.detail; }
+}
+
+async function gmailDisconnect() {
+  const biz = CURRENT_BUSINESS_ID;
+  const el = document.getElementById('gmail-res');
+  el.style.display='block'; el.textContent='Disconnecting...';
+  try {
+    const data = await api('POST','/gmail/disconnect?business_id='+biz);
+    el.textContent = JSON.stringify(data,null,2);
+    toast('✅','Gmail disconnected');
+  } catch(e) { el.textContent='❌ '+e.detail; }
+}
+
+async function fetchEmails(unreadOnly) {
+  const biz   = CURRENT_BUSINESS_ID;
+  const limit = document.getElementById('gmail-limit').value || '5';
+  const el    = document.getElementById('gmail-emails-res');
+  const inbox = document.getElementById('gmail-inbox');
+  el.style.display='block'; el.textContent='Fetching emails...';
+  inbox.innerHTML='';
+  try {
+    const path = `/gmail/emails?business_id=${biz}&max_results=${limit}${unreadOnly?'&unread_only=true':''}`;
+    const data = await api('GET', path);
+    el.textContent = JSON.stringify(data,null,2);
+    if (data.emails && data.emails.length > 0) {
+      inbox.innerHTML = '<div style="margin-top:10px;font-size:11px;color:var(--muted);margin-bottom:6px">'+data.count+' emails fetched:</div>' +
+        data.emails.map(e=>`
+          <div class="em">
+            <div class="em-meta"><div class="em-from">${e.from||e.from_email||'Unknown'}</div><div class="em-time">${(e.date||'').slice(0,16)}</div></div>
+            <div class="em-subj">${e.subject||'(no subject)'}</div>
+            <div class="em-snip">${e.snippet||e.body?.slice(0,80)||''}</div>
+          </div>`).join('');
+    }
+    toast('✅', (data.count||0)+' emails fetched');
+  } catch(e) { el.textContent='❌ '+e.detail; }
+}
+
+// ── WhatsApp ───────────────────────────────────────────────────────────
+async function whatsappConnect() {
+  const biz = document.getElementById('wa-biz').value.trim() || CURRENT_BUSINESS_ID;
+  const phone_number = document.getElementById('wa-number').value.trim();
+  const phone_number_id = document.getElementById('wa-phone-id').value.trim();
+  const access_token = document.getElementById('wa-token').value.trim();
+  if (!phone_number || !phone_number_id || !access_token) { toast('⚠️','Fill in number, Phone Number ID, and access token'); return; }
+  const el = document.getElementById('wa-res');
+  el.style.display='block'; el.textContent='Connecting...';
+  try {
+    const data = await api('POST', '/whatsapp/connect?business_id='+biz, { phone_number, phone_number_id, access_token });
+    el.textContent = JSON.stringify(data,null,2);
+    toast('✅','WhatsApp connected');
+    whatsappStatus();
+  } catch(e) { el.textContent = '❌ '+(e.detail||e.message); toast('❌', e.detail||'Connect failed'); }
+}
+
+async function whatsappStatus() {
+  const biz = document.getElementById('wa-biz')?.value.trim() || CURRENT_BUSINESS_ID;
+  const el = document.getElementById('wa-res');
+  try {
+    const data = await api('GET','/whatsapp/status?business_id='+biz);
+    if (el) el.textContent = JSON.stringify(data,null,2), el.style.display='block';
+    const badge = document.getElementById('whatsapp-status-badge');
+    badge.innerHTML = data.whatsapp_connected
+      ? '<span class="badge bg"><span class="dot"></span> Connected · '+ (data.phone_number||'') +'</span>'
+      : '<span class="badge ba"><span class="dot"></span> Not connected</span>';
+  } catch(e) { if (el) el.textContent = '❌ '+e.detail; }
+}
+
+async function whatsappDisconnect() {
+  const biz = document.getElementById('wa-biz').value.trim() || CURRENT_BUSINESS_ID;
+  const el = document.getElementById('wa-res');
+  el.style.display='block'; el.textContent='Disconnecting...';
+  try {
+    const data = await api('POST','/whatsapp/disconnect?business_id='+biz);
+    el.textContent = JSON.stringify(data,null,2);
+    toast('✅','WhatsApp disconnected');
+    whatsappStatus();
+  } catch(e) { el.textContent = '❌ '+e.detail; }
+}
+
+async function whatsappSend() {
+  const biz = document.getElementById('wa-biz').value.trim() || CURRENT_BUSINESS_ID;
+  const to = document.getElementById('wa-send-to').value.trim();
+  const message = document.getElementById('wa-send-msg').value.trim();
+  const el = document.getElementById('wa-send-res');
+  if (!to || !message) { toast('⚠️','Enter a number and a message'); return; }
+  el.style.display='block'; el.textContent='Sending...';
+  try {
+    const data = await api('POST', '/whatsapp/send?business_id='+biz, { to, message });
+    el.textContent = JSON.stringify(data,null,2);
+    toast('✅','Message sent');
+  } catch(e) { el.textContent = '❌ '+e.detail; }
+}
+
+async function whatsappAgentReply() {
+  const biz = document.getElementById('wa-biz').value.trim() || CURRENT_BUSINESS_ID;
+  const to = document.getElementById('wa-send-to').value.trim();
+  const message = document.getElementById('wa-send-msg').value.trim();
+  const el = document.getElementById('wa-send-res');
+  if (!to || !message) { toast('⚠️','Enter a number and a message to simulate'); return; }
+  el.style.display='block'; el.textContent='AI is drafting + sending a reply...';
+  try {
+    const data = await api('POST', '/whatsapp/agent/reply?business_id='+biz, { to, message });
+    el.textContent = JSON.stringify(data,null,2);
+    toast('🤖','AI replied via WhatsApp');
+  } catch(e) { el.textContent = '❌ '+e.detail; }
+}
+
+async function whatsappDashboard() {
+  const biz = document.getElementById('wa-biz')?.value.trim() || CURRENT_BUSINESS_ID;
+  const el = document.getElementById('wa-dash-res');
+  const inbox = document.getElementById('wa-inbox');
+  if (!el) return;
+  el.style.display='block'; el.textContent='Loading...';
+  try {
+    const data = await api('GET', '/whatsapp/dashboard?business_id='+biz);
+    el.textContent = JSON.stringify({connected:data.connected, phone_number:data.phone_number, total_messages:data.total_messages, unique_contacts:data.unique_contacts}, null, 2);
+    document.getElementById('db-whatsapp').textContent = data.connected ? '1/1' : '0/1';
+    document.getElementById('db-whatsapp-sub').textContent = data.connected ? (data.phone_number||'connected') : 'not connected';
+    if (inbox) {
+      inbox.innerHTML = (data.recent_messages||[]).map(m => `
+        <div class="em">
+          <div class="em-meta"><div class="em-from">${m.direction==='in'?'📥 ':'📤 '}${m.contact}</div><div class="em-time">${(m.at||'').slice(0,16)}</div></div>
+          <div class="em-snip">${m.text}</div>
+        </div>`).join('');
+    }
+  } catch(e) { el.textContent = '❌ '+e.detail; }
+}
+
+async function whatsappAnalytics() {
+  const biz = document.getElementById('wa-biz')?.value.trim() || CURRENT_BUSINESS_ID;
+  const el = document.getElementById('wa-analytics-res');
+  el.style.display='block'; el.textContent='Loading...';
+  try {
+    const data = await api('GET', '/whatsapp/analytics?business_id='+biz);
+    el.textContent = JSON.stringify(data,null,2);
+  } catch(e) { el.textContent = '❌ '+e.detail; }
+}
+
+async function whatsappPlaybooks() {
+  const biz = document.getElementById('wa-biz')?.value.trim() || CURRENT_BUSINESS_ID;
+  const box = document.getElementById('wa-playbooks');
+  try {
+    const data = await api('GET', '/whatsapp/marketplace/playbooks?business_id='+biz);
+    box.innerHTML = data.map(p => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface);border-radius:8px;border:1px solid var(--border);margin-bottom:6px">
+        <div><div style="font-size:12.5px;font-weight:600">${p.name}</div><div style="font-size:10px;color:var(--muted)">${p.description}</div></div>
+        ${p.installed
+          ? '<button class="btn btn-sm btn-danger" onclick="whatsappUninstall(\''+p.id+'\')">Uninstall</button>'
+          : '<button class="btn btn-sm btn-p" onclick="whatsappInstall(\''+p.id+'\')">Install</button>'}
+      </div>`).join('');
+  } catch(e) { box.innerHTML = '<div style="color:var(--red);font-size:12px">❌ '+(e.detail||'Failed to load')+'</div>'; }
+}
+
+async function whatsappInstall(id) {
+  const biz = document.getElementById('wa-biz')?.value.trim() || CURRENT_BUSINESS_ID;
+  try { await api('POST', `/whatsapp/marketplace/install?playbook_id=${id}&business_id=${biz}`); toast('✅','Playbook installed'); whatsappPlaybooks(); }
+  catch(e) { toast('❌', e.detail||'Install failed'); }
+}
+
+async function whatsappUninstall(id) {
+  const biz = document.getElementById('wa-biz')?.value.trim() || CURRENT_BUSINESS_ID;
+  try { await api('POST', `/whatsapp/marketplace/uninstall?playbook_id=${id}&business_id=${biz}`); toast('🗑️','Playbook uninstalled'); whatsappPlaybooks(); }
+  catch(e) { toast('❌', e.detail||'Uninstall failed'); }
+}
+
+// ── Shopify ────────────────────────────────────────────────────────────
+function shopifyConnect() {
+  const shop = document.getElementById('shop-domain').value.trim();
+  const biz  = CURRENT_BUSINESS_ID;
+  if (!shop) { toast('⚠️','Enter shop domain first'); return; }
+  const url = BE() + '/shopify/connect?shop=' + shop + '&business_id=' + biz;
+  toast('🛍️','Opening Shopify OAuth...');
+  window.open(url,'_blank');
+}
+
+async function shopifyStatus() {
+  const biz = CURRENT_BUSINESS_ID;
+  const el  = document.getElementById('shopify-status-res');
+  el.style.display='block'; el.textContent='Checking...';
+  try {
+    const data = await api('GET','/shopify/status?business_id='+biz);
+    el.textContent = JSON.stringify(data,null,2);
+    const badge = document.getElementById('shopify-status-badge');
+    badge.innerHTML = data.shopify_connected
+      ? '<span class="badge bg"><span class="dot"></span> Connected</span>'
+      : '<span class="badge ba"><span class="dot"></span> Not connected</span>';
+    toast(data.shopify_connected?'✅':'⚠️','Shopify: '+( data.shopify_connected?'connected':'not connected'));
+  } catch(e) { el.textContent='❌ '+e.detail; }
+}
+
+async function shopifyOrders() {
+  const biz = CURRENT_BUSINESS_ID;
+  const status = document.getElementById('shop-status').value;
+  await apiCall('GET',`/shopify/orders?business_id=${biz}&status=${status}`,'shopify-orders-res','Fetching Shopify orders...');
+}
+
+// ── WooCommerce ────────────────────────────────────────────────────────
+async function connectWoo() {
+  const url    = document.getElementById('woo-url').value.trim();
+  const key    = document.getElementById('woo-key').value.trim();
+  const secret = document.getElementById('woo-secret').value.trim();
+  if (!url||!key||!secret) { toast('⚠️','Fill all WooCommerce fields'); return; }
+  const el = document.getElementById('woo-res');
+  el.style.display='block'; el.textContent='Connecting...';
+  try {
+    const data = await api('POST','/woocommerce/connect?business_id=' + CURRENT_BUSINESS_ID,{store_url:url,consumer_key:key,consumer_secret:secret});
+    el.textContent = JSON.stringify(data,null,2);
+    document.getElementById('st-woo').className='badge bg';
+    document.getElementById('st-woo').innerHTML='<span class="dot"></span> Connected';
+    document.getElementById('tog-woo').classList.add('on');
+    toast('✅','WooCommerce connected!');
+  } catch(e) { el.textContent='❌ '+e.detail; }
+}
+
+async function connectAmz() {
+  const sid = document.getElementById('amz-seller').value.trim();
+  if (!sid) { toast('⚠️','Enter Seller ID'); return; }
+  const el = document.getElementById('amz-res');
+  el.style.display='block'; el.textContent='Enabling...';
+  try {
+    const data = await api('POST',`/amazon/connect?business_id=${CURRENT_BUSINESS_ID}&seller_id=${sid}`);
+    el.textContent = JSON.stringify(data,null,2);
+    document.getElementById('st-amz').className='badge bg';
+    document.getElementById('st-amz').innerHTML='<span class="dot"></span> Connected';
+    document.getElementById('tog-amz').classList.add('on');
+    toast('✅','Amazon enabled!');
+  } catch(e) { el.textContent='❌ '+e.detail; }
+}
+
+// ── Agents / Marketplace ───────────────────────────────────────────────
+async function seedAgents() {
+  const el = document.getElementById('seed-res');
+  el.style.display='block'; el.textContent='Seeding...';
+  try {
+    const data = await api('POST','/agents/seed');
+    el.textContent = JSON.stringify(data,null,2);
+    toast('✅','Agents seeded to DB');
+    loadMarketplace();
+  } catch(e) { el.textContent='❌ '+e.detail; }
+}
+
+// Removes duplicate agent rows already sitting in the DB (from old,
+// non-idempotent /agents/seed calls) and adds any missing default agents,
+// including the WhatsApp Support Agent, in one call.
+async function dedupeAgents() {
+  const el = document.getElementById('seed-res');
+  el.style.display='block'; el.textContent='Cleaning up duplicates...';
+  try {
+    const data = await api('POST','/agents/dedupe');
+    el.textContent = JSON.stringify(data,null,2);
+    toast('✅','Duplicates removed, marketplace refreshed');
+    loadMarketplace();
+  } catch(e) { el.textContent='❌ '+e.detail; toast('❌', e.detail||'Dedupe failed'); }
+}
+
+// Cache of marketplace agents (id -> {name, description, category}) so the
+// "My Agents" page can show a friendly name/icon instead of a raw agent ID.
+let AGENTS_CACHE = {};
+
+async function loadMyAgents() {
+  const grid = document.getElementById('my-agents-grid');
+  try {
+    if (Object.keys(AGENTS_CACHE).length === 0) await loadMarketplace(true);
+    const data = await api('GET','/agents/my-agents');
+    if (!data||data.length===0) {
+      grid.innerHTML='<div style="color:var(--muted);font-size:12px;grid-column:1/-1">No agents installed yet. <button class="btn btn-sm" onclick="go(\'marketplace\',null)" style="margin-left:6px">Browse marketplace</button></div>';
+      return;
+    }
+    grid.innerHTML = data.map(a=>{
+      const info = AGENTS_CACHE[a.agent_id] || {};
+      return `
+      <div class="ac ins">
+        <div class="ai-icon" style="background:${COLORS[info.category]||'var(--aglow)'}">${ICONS[a.agent_id]||'🤖'}</div>
+        <div class="an">${info.name || ('Agent #'+a.agent_id)}</div>
+        <div class="ad">${info.description || ('Business ID: '+a.business_id)}</div>
+        <div class="af">
+          <span class="badge ${a.status==='active'?'bg':'ba'}">${a.status}</span>
+          <span class="free-tag">✓ Free</span>
+        </div>
+      </div>`;}).join('');
+  } catch(e) {
+    grid.innerHTML='<div style="color:var(--red);font-size:12px;grid-column:1/-1">Could not load agents</div>';
+  }
+}
+
+const ICONS = {1:'🎧',2:'🛍️',3:'📈',4:'💬',5:'💳',6:'⭐',7:'📊',8:'📦'};
+const COLORS = {Support:'var(--aglow)',Marketing:'rgba(59,130,246,.12)',Sales:'rgba(34,197,94,.1)'};
+
+async function loadMarketplace(silent) {
+  const grid = document.getElementById('mkt-grid');
+  try {
+    const data = await api('GET','/agents/');
+    (data||[]).forEach(a => AGENTS_CACHE[a.id] = a);
+    if (silent) return;
+    if (!data||data.length===0) {
+      grid.innerHTML=`<div style="color:var(--muted);font-size:12px;grid-column:1/-1">No agents in DB. <button class="btn btn-sm" onclick="seedAgents()" style="margin-left:6px">Seed sample agents</button></div>`;
+      return;
+    }
+    // NOTE: all agents are treated as free in this UI, no matter what
+    // price the backend sends back. If you ever want paid agents again,
+    // swap the line below back to: $${a.monthly_price||'Free'}/mo
+    grid.innerHTML = data.map(a=>`
+      <div class="ac">
+        <div class="ai-icon" style="background:${COLORS[a.category]||'var(--aglow)'}">${ICONS[a.id]||'🤖'}</div>
+        <div class="an">${a.name}</div>
+        <div class="ad">${a.description||'AI-powered automation agent'}</div>
+        <div class="af">
+          <span class="free-tag">✓ Free</span>
+          <button class="btn btn-p btn-sm" onclick="installAgent(${a.id})">+ Add to my business</button>
+        </div>
+        <div style="margin-top:6px"><span class="badge bp">${a.category||'General'}</span></div>
+      </div>`).join('');
+  } catch(e) {
+    grid.innerHTML='<div style="color:var(--red);font-size:12px;grid-column:1/-1">Could not load marketplace</div>';
+  }
+}
+
+async function installAgent(agentId) {
+  const bizId = CURRENT_BUSINESS_ID;
+  const el = document.getElementById('mkt-res');
+  el.style.display='block'; el.textContent='Installing...';
+  try {
+    const data = await api('POST',`/agents/install/${agentId}?business_id=${bizId}`);
+    el.textContent = JSON.stringify(data,null,2);
+    toast('✅','Agent added — free, no charge!');
+    loadMyAgents();
+  } catch(e) { el.textContent='❌ '+e.detail; toast('❌',e.detail||'Install failed'); }
+}
+
+// ── Replies ────────────────────────────────────────────────────────────
+async function loadReplies() {
+  const biz = CURRENT_BUSINESS_ID;
+  const el  = document.getElementById('replies-list');
+  const res = document.getElementById('rep-res');
+  el.innerHTML='<div style="color:var(--muted);font-size:12px">Loading...</div>';
+  res.style.display='none';
+  try {
+    const data = await api('GET','/replies/pending?business_id='+biz);
+    document.getElementById('repliesBadge').textContent = data.length || 0;
+    document.getElementById('db-replies').textContent = data.length || 0;
+    if (!data||data.length===0) {
+      el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:20px 0">No pending AI replies. Once emails are processed by the Email Agent, drafts will appear here.</div>';
+      return;
+    }
+    el.innerHTML = data.map(r=>`
+      <div class="sec" style="margin-bottom:12px">
+        <div class="sh">
+          <div>
+            <div class="st">Re: ${r.subject||'(no subject)'}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">To: ${r.to_email} · ${r.category||'General'} · ID: ${r.reply_id}</div>
+          </div>
+          <span class="badge ba">Pending</span>
+        </div>
+        <div class="sb2">
+          <textarea id="rt-${r.reply_id}" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px;color:var(--text);font-size:12px;line-height:1.7;resize:vertical;min-height:90px;font-family:inherit;outline:none">${r.reply_text||''}</textarea>
+          <div style="display:flex;gap:7px;margin-top:8px">
+            <button class="btn btn-p btn-sm" onclick="sendReply(${r.reply_id})">✓ Approve & send</button>
+            <button class="btn btn-sm" onclick="editReply(${r.reply_id})">Save edit</button>
+            <button class="btn btn-sm btn-danger" onclick="discardReply(${r.reply_id})">Discard</button>
+            ${r.thread_id ? `<button class="btn btn-sm" onclick="toggleThread(${r.reply_id})">🧵 View conversation</button>` : ''}
+          </div>
+          <div id="thread-${r.reply_id}" style="display:none;margin-top:10px;border-top:1px solid var(--border2);padding-top:10px"></div>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    res.style.display='block'; res.textContent='❌ '+e.detail;
+    el.innerHTML='<div style="color:var(--red);font-size:12px">Could not load replies</div>';
+  }
+}
+
+async function toggleThread(id) {
+  const box = document.getElementById('thread-'+id);
+  if (!box) return;
+
+  if (box.style.display === 'block') {
+    box.style.display = 'none';
+    return;
+  }
+
+  box.style.display = 'block';
+  box.innerHTML = '<div style="color:var(--muted);font-size:11px">Loading conversation…</div>';
+
+  try {
+    const data = await api('GET', `/replies/${id}/thread`);
+    if (!data.messages || data.messages.length === 0) {
+      box.innerHTML = '<div style="color:var(--muted);font-size:11px">No earlier messages in this thread.</div>';
+      return;
+    }
+    box.innerHTML = `
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px">Conversation memory · ${data.message_count} message(s) in thread</div>
+      ${data.messages.map(m => `
+        <div style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;margin-bottom:6px">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">${m.from || 'Unknown'} · ${m.date || ''}</div>
+          <div style="font-size:12px;line-height:1.6;white-space:pre-wrap">${(m.body||'').slice(0,800)}</div>
+        </div>`).join('')}
+    `;
+  } catch (e) {
+    box.innerHTML = '<div style="color:var(--red);font-size:11px">Could not load conversation history</div>';
+  }
+}
+
+// ── Knowledge Base (RAG) ──────────────────────────────────────────────
+async function loadKnowledgeDocs() {
+  const biz = document.getElementById('kb-biz').value || CURRENT_BUSINESS_ID;
+  const el  = document.getElementById('kb-docs-list');
+  el.innerHTML = '<div style="color:var(--muted);font-size:12px">Loading...</div>';
+  try {
+    const docs = await api('GET', '/knowledge/documents?business_id=' + biz);
+    if (!docs || docs.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:12px 0">No documents yet. Add your refund policy, shipping policy, or FAQs above so the AI reply agent can use them.</div>';
+      return;
+    }
+    el.innerHTML = docs.map(d => `
+      <div class="sec" style="margin-bottom:10px">
+        <div class="sh">
+          <div>
+            <div class="st">${d.title}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">${d.chunks} chunk(s)</div>
+          </div>
+          <button class="btn btn-sm btn-danger" onclick="deleteKnowledgeDoc('${d.title.replace(/'/g, "\\'")}')">Delete</button>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    el.innerHTML = '<div style="color:var(--red);font-size:12px">Could not load documents</div>';
+  }
+}
+
+async function addKnowledgeDoc() {
+  const biz = document.getElementById('kb-biz').value || CURRENT_BUSINESS_ID;
+  const title = document.getElementById('kb-title').value.trim();
+  const content = document.getElementById('kb-content').value.trim();
+  const res = document.getElementById('kb-res');
+  if (!title || !content) { toast('❌', 'Title and content are required'); return; }
+  try {
+    const data = await api('POST', '/knowledge/documents', { business_id: Number(biz), title, content });
+    toast('✅', `Indexed "${title}" (${data.chunks_created} chunk(s))`);
+    document.getElementById('kb-title').value = '';
+    document.getElementById('kb-content').value = '';
+    loadKnowledgeDocs();
+  } catch (e) {
+    res.style.display = 'block'; res.textContent = '❌ ' + (e.detail || 'Failed to add document');
+  }
+}
+
+async function deleteKnowledgeDoc(title) {
+  const biz = document.getElementById('kb-biz').value || CURRENT_BUSINESS_ID;
+  if (!confirm(`Delete "${title}" from the knowledge base?`)) return;
+  try {
+    await api('DELETE', `/knowledge/documents?business_id=${biz}&title=${encodeURIComponent(title)}`);
+    toast('✅', 'Document deleted');
+    loadKnowledgeDocs();
+  } catch (e) { toast('❌', e.detail || 'Delete failed'); }
+}
+
+async function testKnowledgeSearch() {
+  const biz = document.getElementById('kb-biz').value || CURRENT_BUSINESS_ID;
+  const query = document.getElementById('kb-test-query').value.trim();
+  const box = document.getElementById('kb-test-results');
+  if (!query) return;
+  box.innerHTML = '<div style="color:var(--muted);font-size:11px">Searching...</div>';
+  try {
+    const data = await api('GET', `/knowledge/search?business_id=${biz}&query=${encodeURIComponent(query)}`);
+    if (!data.results || data.results.length === 0) {
+      box.innerHTML = '<div style="color:var(--muted);font-size:11px">No relevant chunks found — the AI would reply without knowledge-base grounding for this question.</div>';
+      return;
+    }
+    box.innerHTML = data.results.map(r => `
+      <div style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;margin-bottom:6px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">${r.title} · relevance ${r.score}</div>
+        <div style="font-size:12px;line-height:1.6">${r.content}</div>
+      </div>`).join('');
+  } catch (e) {
+    box.innerHTML = '<div style="color:var(--red);font-size:11px">Search failed</div>';
+  }
+}
+
+async function sendReply(id) {
+  try {
+    const data = await api('POST',`/replies/${id}/send`);
+    toast('✅',`Reply sent to ${data.to}`);
+    loadReplies();
+  } catch(e) { toast('❌',e.detail||'Send failed'); }
+}
+
+async function editReply(id) {
+  const text = document.getElementById('rt-'+id)?.value;
+  if (!text) return;
+  try {
+    await api('PUT',`/replies/${id}`,{reply_text:text});
+    toast('✅','Draft saved');
+  } catch(e) { toast('❌',e.detail||'Save failed'); }
+}
+
+async function discardReply(id) {
+  if (!confirm('Discard this draft?')) return;
+  try {
+    await api('DELETE',`/replies/${id}`);
+    toast('🗑️','Draft discarded');
+    loadReplies();
+  } catch(e) { toast('❌',e.detail||'Discard failed'); }
+}
+
+// ── Misc ───────────────────────────────────────────────────────────────
+function toggleTog(el, name) {
+  el.classList.toggle('on');
+  toast(el.classList.contains('on')?'✅':'⏸️', name + (el.classList.contains('on')?' enabled':' paused'));
+}
+
+async function pingBackend() {
+  const el = document.getElementById('ping-res');
+  el.style.display='block'; el.textContent='Pinging '+BE()+'...';
+  try {
+    const data = await api('GET','/');
+    el.textContent = JSON.stringify(data,null,2);
+    toast('✅','Backend online: '+data.message);
+  } catch(e) { el.textContent='❌ Backend not reachable at '+BE(); toast('❌','Backend offline'); }
+}
+
+function copyJwt() {
+  const jwt = document.getElementById('cfg-jwt').value;
+  if (!jwt) { toast('⚠️','No JWT token — login first'); return; }
+  navigator.clipboard?.writeText(jwt).then(()=>toast('✅','JWT copied'));
+}
+
+// ── Enter key on login ─────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('authWrap').style.display !== 'none') {
+    if (document.getElementById('loginF').style.display !== 'none') doLogin();
+    else doRegister();
+  }
+});
+</script>
+</body>
+</html>

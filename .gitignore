@@ -1,0 +1,52 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# VS Code
+.vscode/
+
+# Node
+node_modules/
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+# Secrets
+.env
+credentials.json
+backend/credentials.json
+
+# Test files
+backend/app/test_hf.py
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Secrets
+.env
+.env.*
+credentials.json
+backend/credentials.json
+backend/app/test_hf.py
+*.pem
+*.key
+*.json
