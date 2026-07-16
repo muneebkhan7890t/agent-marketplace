@@ -34,7 +34,7 @@ backend/credentials.json
 backend/app/test_hf.py
 
 # Python
-venv/
+.venv/
 __pycache__/
 *.pyc
 
